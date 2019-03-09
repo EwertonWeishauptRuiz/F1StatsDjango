@@ -2,6 +2,10 @@ from django.db import models
 from f12018.position_to_points import POSITIONS_TO_POINTS
 
 
+def get_race_winner(race):
+    return Position.objects.get(race_position=race, position=1).driver_position
+
+
 class Country(models.Model):
     def __str__(self):
         return self.country_name
@@ -13,7 +17,8 @@ class Team(models.Model):
     def __str__(self):
         return self.team_name
     team_name = models.CharField(max_length=200)
-    team_nationality = models.ForeignKey(Country, on_delete=models.CASCADE)
+    team_nationality = models.ForeignKey(
+        Country, on_delete=models.CASCADE, blank=True)
 
 
 class Driver(models.Model):
@@ -46,12 +51,9 @@ class Race(models.Model):
         return self.grand_prix_name
     grand_prix_name = models.CharField(max_length=200)
     circuit_name = models.CharField(max_length=200)
-    cirtcuit_nationality = models.ForeignKey(Country, on_delete=models.CASCADE)
+    circuit_nationality = models.ForeignKey(Country, on_delete=models.CASCADE)
     grand_prix_date = models.DateTimeField('Race Date')
     position_driver_race = models.ManyToManyField('Position', blank=True)
-
-    def get_race_winner(self):
-        return self.position_driver_race.filter(race_position=self, position=1).first().driver_position
 
 
 class Position(models.Model):
