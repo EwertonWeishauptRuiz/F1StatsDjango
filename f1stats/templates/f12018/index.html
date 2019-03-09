@@ -1,0 +1,9 @@
+{% if drivers %}
+    <ul>
+    {% for driver in drivers %}
+        <li><a href="/f12018/{{ driver.id }}/">{{ driver.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No drivers are available.</p>
+{% endif %}

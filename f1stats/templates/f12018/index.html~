@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.template import loader
+from django import HttpResponse
 from f12018.models import Driver
 
 # Create your views here.
@@ -7,11 +7,7 @@ from f12018.models import Driver
 
 def index(request):
     all_drivers = Driver.objects.all()
-    template = loader.get_template('f12018/index.html')
-    context = {
-        'drivers': all_drivers
-        }
-    return render(request, 'f12018/index.html', context)
+    return HttpResponse(all_drivers)
 
 
 def driver(request, driver_id):

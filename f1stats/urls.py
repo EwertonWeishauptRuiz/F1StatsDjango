@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from f12018 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path ('', views.index, name='index'),
+    # path('<int:driver_id>/', views.driver, name='dribbver'),
 ]
