@@ -8,6 +8,7 @@ from f12018.models import (
     Position,
 )
 from f12018.test_utilities import F1TestUtilities
+from f12018.position_to_points import POSITIONS_TO_POINTS
 
 
 class TestF1Stats(F1TestUtilities):
@@ -30,7 +31,7 @@ class TestF1Stats(F1TestUtilities):
                 race_position=race,
             )
 
-        actual = Position.get_race_winner()
+        actual = Position.get_race_winner(race)
         expected = Driver.objects.get(driver_name='Mock Driver 1')
         self.assertEqual(expected, actual)
 
@@ -55,6 +56,34 @@ class TestF1Stats(F1TestUtilities):
                 driver_position=Driver.objects.first(),
                 )
 
-        actual = Driver.get_win_number(driver)
+        Driver.get_win_number(driver)
+        actual = driver.wins
         expected = amount_of_wins
+        self.assertEqual(expected, actual)
+
+    def test_total_points_season(self):
+        self.mock_country()
+        self.mock_team()
+        self.mock_driver()
+        driver = Driver.objects.first()
+
+        race_position = '1'
+        amount_of_wins = 5
+
+        for i in range(amount_of_wins):
+            Race.objects.create(
+                grand_prix_name='Race {}'.format(i+1),
+                circuit_name='Circuit {}'.format(i+1),
+                circuit_nationality=Country.objects.first(),
+                grand_prix_date=date.today() + timedelta(days=i),
+                )
+            Position.objects.create(
+                position=race_position,
+                race_position=Race.objects.get(pk=i+1),
+                driver_position=Driver.objects.first(),
+                )
+
+        Driver.get_total_points_season(driver)
+        actual = driver.driver_season_points
+        expected = amount_of_wins * int(POSITIONS_TO_POINTS[race_position])
         self.assertEqual(expected, actual)
