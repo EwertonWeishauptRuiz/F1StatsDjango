@@ -2,8 +2,7 @@ from django.db import models
 from f12018.position_to_points import POSITIONS_TO_POINTS
 
 
-def get_race_winner(race):
-    return Position.objects.get(race_position=race, position=1).driver_position
+
 
 
 class Country(models.Model):
@@ -31,11 +30,12 @@ class Driver(models.Model):
     driver_race_position = models.ManyToManyField('Position', blank=True)
     driver_season_points = models.IntegerField(default=0)
 
-    def get_win_number(self):
-        wins = Driver.objects.filter(driver_name=self.driver_name,
-                                     position=1).count()
-        return wins
+    @classmethod
+    def get_win_number(self, driver):
+        return Position.objects.filter(
+            driver_position=driver, position=1).count()
 
+    @classmethod
     def get_total_points_season(self):
         positions = self.driver_race_position.all()
         points = 0
@@ -64,3 +64,8 @@ class Position(models.Model):
         Driver, blank=False, on_delete=models.CASCADE)
     race_position = models.ForeignKey(
         Race, blank=False, on_delete=models.CASCADE)
+
+    @classmethod
+    def get_race_winner(self, race):
+        return Position.objects.get(
+            race_position=race, position=1).driver_position
